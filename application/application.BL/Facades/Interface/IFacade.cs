@@ -2,9 +2,9 @@
 
 namespace application.BL.Facades;
 
-public interface IFacade<TEntity>
+public interface IFacade<TEntity, TModel>
 {
-    public Task<IEnumerable<TEntity>> GetAsync(Expression<Func<TEntity, bool>>? filter = null);
-    public Task<int> SaveAsync(TEntity entity);
-    public void DeleteAsync(TEntity entity);
+    public Task<ICollection<TModel>> GetAsync(Expression<Func<TEntity, bool>>? filter = null);
+    public Task<int> SaveAsync(TModel entity);
+    public Task DeleteAsync(TModel entity);
 }

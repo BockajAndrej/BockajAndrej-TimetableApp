@@ -36,15 +36,15 @@ public partial class MyDbContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__CP__3213E83F2C958E69");
 
             entity.HasOne(d => d.IdEmployeeNavigation).WithMany(p => p.Cps)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_emp");
 
             entity.HasOne(d => d.IdEndCityNavigation).WithMany(p => p.CpIdEndCityNavigations)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_endCity");
 
             entity.HasOne(d => d.IdStartCityNavigation).WithMany(p => p.CpIdStartCityNavigations)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_startCity");
         });
 
