@@ -7,7 +7,8 @@ namespace application.BL.Facades;
 
 public class Facade<TEntity> (DbContexCpFactory factory): IFacade<TEntity> where TEntity : class
 {
-    public async Task<IEnumerable<TEntity>> GetAsync(Expression<Func<TEntity, bool>>? filter = null)
+    //Todo: containing entities with include does not implemented -- 26.6.25
+    public Task<IEnumerable<TEntity>> GetAsync(Expression<Func<TEntity, bool>>? filter = null)
     {
          var dbContext = factory.CreateDbContext();
 
@@ -15,14 +16,24 @@ public class Facade<TEntity> (DbContexCpFactory factory): IFacade<TEntity> where
         IQueryable<TEntity> query = dbContext.Set<TEntity>();
 
         if (filter != null)
-            query = query.Where(filter);
+             query = query.Where(filter);
 
-        return query;
+        return Task.FromResult<IEnumerable<TEntity>>(query);
     }
 
-    public Task<TEntity> SaveAsync()
+    public async Task<TEntity> SaveAsync(TEntity entity)
     {
-        throw new NotImplementedException();
+        var dbContext = factory.CreateDbContext();
+        
+        var dbSet = dbContext.Set<TEntity>();
+        var firstEntity = dbSet.FirstOrDefault();
+        if (firstEntity == null)
+            dbContext.Add(entity);
+        else
+            dbContext.Update(entity);
+        
+        await dbContext.SaveChangesAsync();
+        return entity;
     }
 
     public void DeleteAsync()
