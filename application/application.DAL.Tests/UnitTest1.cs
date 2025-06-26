@@ -19,7 +19,7 @@ public class UnitTest1 : IDisposable
     [Fact]
     public void Test1()
     {
-        MyDbContext context = _contextFactory.CreateDbContext();
+        var context = _contextFactory.CreateDbContext();
         
         //Arranges
         var newEmployee = new Employee
@@ -33,19 +33,23 @@ public class UnitTest1 : IDisposable
         
         //Act
         context.Employees.Add(newEmployee);
-        try
-        {
-            var result = context.SaveChanges();
-            _testOutputHelper.WriteLine("Employee added = " + result);
-        }
-        catch (Exception ex)
-        {
-            _testOutputHelper.WriteLine("Added was canceled = " + ex.Message);
-        }
-            
+        context.SaveChanges();
+        var context2 = _contextFactory.CreateDbContext();
+        
         //Assert
-        var empList = context.Employees.ToList();
-        foreach (var emp1 in empList)
+        var empList2 = context2.Employees.ToList();
+        foreach (var emp1 in empList2)
+            _testOutputHelper.WriteLine(emp1.Id + " " + emp1.FirstName  + " " + emp1.LastName);
+        
+        _testOutputHelper.WriteLine("------------------------------");
+        
+        var context3 = _contextFactory.CreateDbContext();
+        context3.Employees.Remove(newEmployee);
+        context3.SaveChanges();
+        
+        //Assert
+        var empList3 = context3.Employees.ToList();
+        foreach (var emp1 in empList3)
             _testOutputHelper.WriteLine(emp1.Id + " " + emp1.FirstName  + " " + emp1.LastName);
     }
 
