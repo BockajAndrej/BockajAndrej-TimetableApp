@@ -6,5 +6,4 @@ namespace application.BL.Facades;
 
 public class EmployeeFacade(DbContexCpFactory factory) : Facade<Employee>(factory)
 {
-    
 }

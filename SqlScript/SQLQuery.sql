@@ -99,8 +99,7 @@ GO
 INSERT INTO dbo.CP (id_employee, id_startCity, id_endCity, creationDate, startTime, endTime, cpState)
 VALUES
 ('EMP001', 1, 2, '2023-10-26', '2023-11-01 08:00:00 +01:00', '2023-11-01 12:00:00 +01:00', 'Planned'),
-('EMP002', 2, 3, '2023-10-26', '2023-11-02 09:00:00 +01:00', '2023-11-02 14:00:00 +01:00', 'Planned'),
-('EMP003', 3, 4, '2023-10-27', '2023-11-03 07:30:00 +01:00', '2023-11-03 11:00:00 +01:00', 'Completed');
+('EMP002', 2, 3, '2023-10-26', '2023-11-02 09:00:00 +01:00', '2023-11-02 14:00:00 +01:00', 'Planned')
 GO
 
 INSERT INTO dbo.Transport (id_cp, id_vehicle)
