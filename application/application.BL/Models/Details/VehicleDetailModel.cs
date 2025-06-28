@@ -7,5 +7,5 @@ namespace application.BL.Models.Details;
 public class VehicleDetailModel : VehicleListModel
 {
     public ObservableCollection<CpListModel> CpList = new();
-    public ObservableCollection<TransportListModel> TransportDetail = new();
+    public ObservableCollection<TransportListModel> TransportList = new();
 }

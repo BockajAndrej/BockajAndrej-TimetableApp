@@ -15,21 +15,25 @@ public class CpFacade(
     IMapper mapperProfile
     ) : Facade<Cp, CpDetailModel>(factory, mapperProfile)
 {
-    private readonly DbContexCpFactory _factory1 = factory;
+    private readonly DbContexCpFactory _factory = factory;
     private readonly IMapper _mapperProfile = mapperProfile;
 
     public async Task<CpDetailModel> SaveVehicle(CpDetailModel model, VehicleDetailModel vehicle)
     {
-        TransportFacade transportFacade = new TransportFacade(_factory1, _mapperProfile);
+        TransportFacade transportFacade = new TransportFacade(_factory, _mapperProfile);
+        VehicleFacade vehicleFacade = new VehicleFacade(_factory, _mapperProfile);
+        
         TransportListModel transportListModel = new TransportListModel()
         {
             Vehicle = vehicle,
             Cp = model
         };
         transportListModel = await transportFacade.SaveAsync(transportListModel);
-        // model.TransportDetail.Add(transportListModel);
-        // vehicle.TransportDetail.Add(transportListModel);
+        model.TransportList.Add(transportListModel);
+        vehicle.TransportList.Add(transportListModel);
         
+        vehicle = await vehicleFacade.SaveAsync(vehicle);
+        model = await this.SaveAsync(model); 
         
         return model;
     }

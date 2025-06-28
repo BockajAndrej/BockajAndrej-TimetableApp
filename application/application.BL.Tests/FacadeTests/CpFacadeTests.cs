@@ -73,19 +73,7 @@ public class CpFacadeTests : FacadeTests
         
         modelVehicle = await vehicleFacade.SaveAsync(modelVehicle);
         model = await _facade.SaveAsync(model);
-        // await _facade.SaveVehicle(model, modelVehicle);
-        
-        TransportListModel transportListModel = new TransportListModel()
-        {
-            Vehicle = modelVehicle,
-            Cp = model
-        };
-        transportListModel = await transportFacade.SaveAsync(transportListModel);
-        model.TransportList.Add(transportListModel);
-        modelVehicle.TransportDetail.Add(transportListModel);
-        modelVehicle.CpList.Add(model);
-        modelVehicle = await vehicleFacade.SaveAsync(modelVehicle);
-        model = await _facade.SaveAsync(model); 
+        await _facade.SaveVehicle(model, modelVehicle);
         
         var modelList = await _facade.GetAsync();
         foreach (var item in modelList)

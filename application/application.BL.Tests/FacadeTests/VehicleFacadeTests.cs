@@ -7,9 +7,11 @@ namespace application.BL.Tests.FacadeTests;
 [Collection("Sequential")]
 public class VehicleFacadeTests : FacadeTests
 {
+    private readonly ITestOutputHelper _testOutputHelper;
     VehicleFacade _facade;
     public VehicleFacadeTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
     {
+        _testOutputHelper = testOutputHelper;
         _facade = new VehicleFacade(Factory, Mapper);
     }
 
@@ -41,13 +43,18 @@ public class VehicleFacadeTests : FacadeTests
         Assert.Equal(cntBefor, cntAfter);
     }
 
-    [Fact(Skip = "ddd")]
+    [Fact]
     public async Task TestDeleteAsync()
     {
         var all = await _facade.GetAsync();
         foreach (var model in all)
         {
-            await _facade.DeleteAsync(model);
+            _testOutputHelper.WriteLine($"Vehicle: {model.Id} {model.VehicleName}");
+            foreach (var cp in model.CpList)
+            {
+                _testOutputHelper.WriteLine($"\t Cp: {cp.Id} {cp.IdEmployee} {cp.CpState}");
+            }
+            // await _facade.DeleteAsync(model);
         }
     }
 }

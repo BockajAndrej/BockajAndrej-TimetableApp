@@ -11,7 +11,7 @@ public class VehicleDetailMapperConfig : Profile
         CreateMap<Vehicle, VehicleDetailModel>()
             .ForMember(dest => dest.CpList,
                 opt => opt.MapFrom(src => src.Transports.Select(t => t.IdCpNavigation)))
-            .ForMember(dest => dest.TransportDetail,
+            .ForMember(dest => dest.TransportList,
                 opt => opt.MapFrom(src => src.Transports));
             
         
@@ -19,6 +19,6 @@ public class VehicleDetailMapperConfig : Profile
         //Todo: how to save N to N relationship (dont know how to deal with transport entity)
         CreateMap<VehicleDetailModel, Vehicle>()
             .ForMember(dest => dest.Transports, 
-                opt => opt.MapFrom(src => src.TransportDetail));
+                opt => opt.MapFrom(src => src.TransportList));
     }
 }
