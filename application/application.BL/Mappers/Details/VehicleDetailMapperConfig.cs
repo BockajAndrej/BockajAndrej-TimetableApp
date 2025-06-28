@@ -1,0 +1,24 @@
+﻿using application.BL.Models.Details;
+using application.DAL.Entities;
+using AutoMapper;
+
+namespace application.BL.Mappers;
+
+public class VehicleDetailMapperConfig : Profile
+{
+    public VehicleDetailMapperConfig()
+    {
+        CreateMap<Vehicle, VehicleDetailModel>()
+            .ForMember(dest => dest.CpList,
+                opt => opt.MapFrom(src => src.Transports.Select(t => t.IdCpNavigation)))
+            .ForMember(dest => dest.TransportDetail,
+                opt => opt.MapFrom(src => src.Transports));
+            
+        
+        //Inversion functionality
+        //Todo: how to save N to N relationship (dont know how to deal with transport entity)
+        CreateMap<VehicleDetailModel, Vehicle>()
+            .ForMember(dest => dest.Transports, 
+                opt => opt.MapFrom(src => src.TransportDetail));
+    }
+}

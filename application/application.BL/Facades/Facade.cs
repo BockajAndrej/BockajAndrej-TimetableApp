@@ -1,4 +1,6 @@
 ﻿using System.Linq.Expressions;
+using System.Reflection;
+using application.BL.Facades.Interface;
 using application.BL.Mappers;
 using application.DAL;
 using application.DAL.Factories;
@@ -8,60 +10,76 @@ using Microsoft.EntityFrameworkCore;
 
 namespace application.BL.Facades;
 
-public class Facade<TEntity, TModel> : IFacade<TEntity, TModel> where TEntity : class
+public class Facade
+    <TEntity, TModel> : IFacade<TEntity, TModel> where TEntity : class
 {
-    private MyDbContext _dbContext;
+    private DbContexCpFactory _factory;
     private IMapper _mapper;
     public Facade(DbContexCpFactory factory, IMapper mapper)
     {
-        _dbContext = factory.CreateDbContext();
+        _factory = factory;
         _mapper = mapper;
     }
+    //Todo: Constraints for CP state need to be entered in SQL script -- 26.6.2025
     //Todo: There is TEntity (need to be changed to TModel) -- 26.6.2025
+    //Todo: Define max count of loaded entities -- 27.6.2025
     public async Task<ICollection<TModel>> GetAsync(Expression<Func<TEntity, bool>>? filter = null)
     {
-        // Access to DbSet
-        IQueryable<TEntity> query = _dbContext.Set<TEntity>();
+        List<TModel> resultList;
+        using (var dbContext = _factory.CreateDbContext())
+        {
+            // Access to DbSet
+            IQueryable<TEntity> query = dbContext.Set<TEntity>();
 
-        if (filter != null)
-             query = query.Where(filter);
-        
-        IQueryable<TModel> projectedQuery = query.ProjectTo<TModel>(_mapper.ConfigurationProvider);
-        List<TModel> resultList = await projectedQuery.ToListAsync();
-        
+            if (filter != null)
+                 query = query.Where(filter);
+            
+            IQueryable<TModel> projectedQuery = query.ProjectTo<TModel>(_mapper.ConfigurationProvider);
+            resultList = await projectedQuery.ToListAsync();
+        }
         return resultList;
     }
 
-    public async Task<int> SaveAsync(TModel model)
+    public async Task<TModel> SaveAsync(TModel model)
     {
         TEntity entity = _mapper.Map<TEntity>(model);
-        int result;
-        try
+        using (var dbContext = _factory.CreateDbContext())
         {
-            _dbContext.Update(entity);
-            result = await _dbContext.SaveChangesAsync();
+            dbContext.Update(entity);
+            try
+            {
+                await dbContext.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                dbContext.Add(entity);
+                await dbContext.SaveChangesAsync();
+            }
         }
-        catch (DbUpdateConcurrencyException ex)
-        {
-            _dbContext.Add(entity);
-            result = await _dbContext.SaveChangesAsync();
-        }
-        
-        return result;
+
+        return _mapper.Map<TModel>(entity);
     }
 
     public async Task DeleteAsync(TModel model)
     {
-        var entityId = (string)model.GetType().GetProperty("Id").GetValue(model);
+        PropertyInfo? idProperty = typeof(TModel).GetProperty("Id");
+        if (idProperty == null)
+            throw new InvalidOperationException($"Typ {typeof(TModel).Name} nemá property s názvom 'Id'.");
+
         
+        object? entityId = idProperty.GetValue(model);
         if (entityId == null)
             throw new ArgumentException("Entity Id is not defined");
         
-        TEntity? entityToDelete = await _dbContext.Set<TEntity>().FindAsync(entityId);
-        if (entityToDelete != null)
+
+        using (var dbContext = _factory.CreateDbContext())
         {
-             _dbContext.Remove(entityToDelete);
-             _dbContext.SaveChanges();
+            TEntity? entityToDelete = await dbContext.Set<TEntity>().FindAsync(entityId);
+            if (entityToDelete != null)
+            {
+                dbContext.Remove(entityToDelete);
+                dbContext.SaveChanges();
+            }
         }
     }
 }

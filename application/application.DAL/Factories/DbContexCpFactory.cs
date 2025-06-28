@@ -10,6 +10,7 @@ public class DbContexCpFactory(string connectionString) : DbContext
         optionsBuilder.UseSqlServer(connectionString);
         optionsBuilder.EnableSensitiveDataLogging();
         optionsBuilder.LogTo(Console.WriteLine);
+        
         return new MyDbContext(optionsBuilder.Options);
     }
 }

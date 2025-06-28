@@ -2,7 +2,7 @@
 
 namespace application.DAL.Seeds;
 
-public class EmployeeSeeds
+public static class EmployeeSeeds
 {
     public static readonly Employee Chetta = new()
     {

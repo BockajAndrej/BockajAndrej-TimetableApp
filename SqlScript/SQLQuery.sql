@@ -63,13 +63,17 @@ ALTER TABLE dbo.CP ADD CONSTRAINT FK_emp FOREIGN KEY (id_employee) REFERENCES db
 GO
 ALTER TABLE dbo.CP ADD CONSTRAINT FK_startCity FOREIGN KEY (id_startCity) REFERENCES dbo.City (id) ON DELETE CASCADE;
 GO
-ALTER TABLE dbo.CP ADD CONSTRAINT FK_endCity FOREIGN KEY (id_endCity) REFERENCES dbo.City (id) ON DELETE CASCADE;
+ALTER TABLE dbo.CP ADD CONSTRAINT FK_endCity FOREIGN KEY (id_endCity) REFERENCES dbo.City (id) ON DELETE NO ACTION;
 GO
 
+ALTER TABLE dbo.CP
+ADD CONSTRAINT CK_CP_cpState
+CHECK (cpState IN ('Vytvorený', 'Schválený', 'Vyúètovaný', 'Zrušený'));
+
 --Transport 
-ALTER TABLE dbo.Transport ADD CONSTRAINT FK_cp FOREIGN KEY (id_cp) REFERENCES dbo.CP (id);
+ALTER TABLE dbo.Transport ADD CONSTRAINT FK_cp FOREIGN KEY (id_cp) REFERENCES dbo.CP (id) ON DELETE CASCADE;
 GO
-ALTER TABLE dbo.Transport ADD CONSTRAINT FK_veh FOREIGN KEY (id_vehicle) REFERENCES dbo.Vehicle (id);
+ALTER TABLE dbo.Transport ADD CONSTRAINT FK_veh FOREIGN KEY (id_vehicle) REFERENCES dbo.Vehicle (id) ON DELETE CASCADE;
 GO
 
 
@@ -98,8 +102,10 @@ GO
 
 INSERT INTO dbo.CP (id_employee, id_startCity, id_endCity, creationDate, startTime, endTime, cpState)
 VALUES
-('EMP001', 1, 2, '2023-10-26', '2023-11-01 08:00:00 +01:00', '2023-11-01 12:00:00 +01:00', 'Planned'),
-('EMP002', 2, 3, '2023-10-26', '2023-11-02 09:00:00 +01:00', '2023-11-02 14:00:00 +01:00', 'Planned')
+('EMP001', 1, 2, '2023-10-25', '2023-11-01 08:00:00 +01:00', '2023-11-01 12:00:00 +01:00', 'Vyúètovaný'),
+('EMP002', 2, 3, '2023-10-26', '2023-11-02 09:00:00 +01:00', '2023-11-02 14:00:00 +01:00', 'Schválený'),
+('EMP003', 1, 4, '2023-10-27', '2023-11-03 10:00:00 +01:00', '2023-11-02 15:00:00 +01:00', 'Vytvorený')
+
 GO
 
 INSERT INTO dbo.Transport (id_cp, id_vehicle)

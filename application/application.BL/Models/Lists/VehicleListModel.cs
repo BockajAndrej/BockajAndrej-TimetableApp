@@ -3,5 +3,5 @@
 public class VehicleListModel
 {
     public int Id { get; set; }
-    public string VehicleName { get; set; }
+    public required string VehicleName { get; set; }
 }

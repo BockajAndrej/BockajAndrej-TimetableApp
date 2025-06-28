@@ -1,6 +1,14 @@
-﻿namespace application.BL.Facades;
+﻿using application.BL.Models.Details;
+using application.DAL.Entities;
+using application.DAL.Factories;
+using AutoMapper;
 
-public class CityFacade
+namespace application.BL.Facades;
+
+public class CityFacade(
+    DbContexCpFactory factory, 
+    IMapper mapperProfile
+) : Facade<City, CityDetailModel>(factory, mapperProfile)
 {
     
 }
