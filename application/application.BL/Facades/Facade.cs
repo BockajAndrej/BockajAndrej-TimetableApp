@@ -11,11 +11,11 @@ using Microsoft.EntityFrameworkCore;
 namespace application.BL.Facades;
 
 public class Facade
-    <TEntity, TModel> : IFacade<TEntity, TModel> where TEntity : class
+    <TEntity, TModel, TDbContext> : IFacade<TEntity, TModel> where TEntity : class where TDbContext : DbContext
 {
-    private DbContexCpFactory _factory;
+    private IDbContextFactory<TDbContext> _factory;
     private IMapper _mapper;
-    public Facade(DbContexCpFactory factory, IMapper mapper)
+    public Facade(IDbContextFactory<TDbContext> factory, IMapper mapper)
     {
         _factory = factory;
         _mapper = mapper;
@@ -26,14 +26,14 @@ public class Facade
     public async Task<ICollection<TModel>> GetAsync(Expression<Func<TEntity, bool>>? filter = null)
     {
         List<TModel> resultList;
-        using (var dbContext = _factory.CreateDbContext())
+        using (var dbContext = await _factory.CreateDbContextAsync())
         {
             // Access to DbSet
             IQueryable<TEntity> query = dbContext.Set<TEntity>();
 
             if (filter != null)
-                 query = query.Where(filter);
-            
+                query = query.Where(filter);
+
             IQueryable<TModel> projectedQuery = query.ProjectTo<TModel>(_mapper.ConfigurationProvider);
             resultList = await projectedQuery.ToListAsync();
         }
@@ -66,11 +66,11 @@ public class Facade
         if (idProperty == null)
             throw new InvalidOperationException($"Typ {typeof(TModel).Name} nemá property s názvom 'Id'.");
 
-        
+
         object? entityId = idProperty.GetValue(model);
         if (entityId == null)
             throw new ArgumentException("Entity Id is not defined");
-        
+
 
         using (var dbContext = _factory.CreateDbContext())
         {

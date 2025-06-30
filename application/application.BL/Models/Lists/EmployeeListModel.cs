@@ -9,4 +9,6 @@ public class EmployeeListModel
 
     public required DateOnly BirthDay { get; set; }
     public required string BirthNumber { get; set; } = null!;
+
+    public string FullName => $"{FirstName} {LastName}";
 }
