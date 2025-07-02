@@ -46,6 +46,7 @@ public partial class MainPageView : ContentPage
 
     }
 
+    // ExpandedChanged="OnExpanderIsExpandedChanged"
     private void OnExpanderIsExpandedChanged(object sender, CommunityToolkit.Maui.Core.ExpandedChangedEventArgs e)
     {
         //Expanded
@@ -55,7 +56,7 @@ public partial class MainPageView : ContentPage
         //Collapsed
         else
         {
-            _viewModel.LoadDataCpQuery();
+            //_viewModel.LoadDataCpQuery();
         }
     }
 }

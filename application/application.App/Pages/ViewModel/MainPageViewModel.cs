@@ -1,17 +1,12 @@
-﻿using application.App.Pages.View.Popups;
-using application.BL.Facades;
+﻿using application.BL.Facades;
 using application.BL.Models.Details;
 using application.DAL.Entities;
-using CommunityToolkit.Maui;
-using CommunityToolkit.Maui.Core;
-using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Globalization;
+using System.ComponentModel;
 using System.Linq.Expressions;
-using System.Text;
 
 namespace application.App.Pages.ViewModel
 {
@@ -22,8 +17,30 @@ namespace application.App.Pages.ViewModel
         private readonly CityFacade _cityFacade;
         private readonly VehicleFacade _vehicleFacade;
 
-        [ObservableProperty]
-        public ICollection<EmployeeDetailModel> _employeeDetailModels = new ObservableCollection<EmployeeDetailModel>();
+        private ObservableCollection<EmployeeDetailModel> _employeeDetailModels;
+        public ObservableCollection<EmployeeDetailModel> EmployeeDetailModels
+        {
+            get => _employeeDetailModels;
+            set
+            {
+                if (_employeeDetailModels != null)
+                {
+                    _employeeDetailModels.CollectionChanged -= EmployeeDetailModels_CollectionChanged;
+                    foreach (var employee in _employeeDetailModels)
+                        employee.PropertyChanged -= Employee_PropertyChanged;
+                }
+
+                SetProperty(ref _employeeDetailModels, value);
+                if (_employeeDetailModels != null)
+                {
+                    _employeeDetailModels.CollectionChanged += EmployeeDetailModels_CollectionChanged;
+                    foreach (var employee in _employeeDetailModels)
+                        employee.PropertyChanged += Employee_PropertyChanged;
+                }
+            }
+        }
+
+
         [ObservableProperty]
         public ICollection<CpDetailModel> _cpDetailModels = new ObservableCollection<CpDetailModel>();
         [ObservableProperty]
@@ -38,21 +55,10 @@ namespace application.App.Pages.ViewModel
         private string _searchbarCp = string.Empty;
 
         //Predicates
-        private Expression<Func<Cp, bool>> predicateEmployeeForCp;
-        private Expression<Func<Cp, bool>> predicateVehicleForCp;
-        private Expression<Func<Cp, bool>> predicateCityForCp;
+        private Expression<Func<Cp, bool>> _predicateEmployeeForCp = l => true;
+        private Expression<Func<Cp, bool>> _predicateVehicleForCp = l => true;
+        private Expression<Func<Cp, bool>> _predicateCityForCp = l => true;
 
-        //Selections
-        [ObservableProperty]
-        private EmployeeDetailModel? _selectedEmployee;
-
-        [ObservableProperty]
-        public ObservableCollection<object> _selectedEmployeeList = new ObservableCollection<object>();
-        private int _lastSelectedEmployeeCount = 0;
-        private int _actualSelectedEmployeeIndex = 0;
-
-
-        //(EmployeeFacade employeeFacade, CpFacade cpFacade, CityFacade cityFacade, VehicleFacade vehicleFacade)
         public MainPageViewModel(EmployeeFacade employeeFacade, CpFacade cpFacade, CityFacade cityFacade,
             VehicleFacade vehicleFacade)
         {
@@ -61,21 +67,19 @@ namespace application.App.Pages.ViewModel
             _cityFacade = cityFacade;
             _vehicleFacade = vehicleFacade;
 
-            SelectedEmployeeList.CollectionChanged += SelectedEmployeeListOnCollectionChanged;
-
             LoadData();
         }
 
         public async Task LoadData()
         {
-            EmployeeDetailModels = await _employeeFacade.GetAsync();
+            var result = await _employeeFacade.GetAsync();
+            EmployeeDetailModels = new ObservableCollection<EmployeeDetailModel>(result);
             CpDetailModels = await _cpFacade.GetAsync();
             CityDetailModels = await _cityFacade.GetAsync();
             VehicleDetailModels = await _vehicleFacade.GetAsync();
         }
 
-        [RelayCommand]
-        private async Task LoadDataEmployeeQuery()
+        async partial void OnSearchbarEmployeeChanged(string? value)
         {
             EmployeeDetailModels.Clear();
 
@@ -84,9 +88,20 @@ namespace application.App.Pages.ViewModel
                 lamb.FirstName.ToLower().Contains(lowerSearchTerm) || lamb.LastName.ToLower().Contains(lowerSearchTerm);
 
             if (SearchbarEmployee != string.Empty)
-                EmployeeDetailModels = await _employeeFacade.GetAsync(filter: predicateEmployee);
+            {
+                var result = await _employeeFacade.GetAsync(predicateEmployee);
+                EmployeeDetailModels = new ObservableCollection<EmployeeDetailModel>(result);
+            }
             else
-                EmployeeDetailModels = await _employeeFacade.GetAsync();
+            {
+                var result = await _employeeFacade.GetAsync();
+                EmployeeDetailModels = new ObservableCollection<EmployeeDetailModel>(result);
+            }
+        }
+
+        async partial void OnSearchbarCpChanged(string? value)
+        {
+            await LoadDataCpQuery();
         }
 
         [RelayCommand]
@@ -100,7 +115,7 @@ namespace application.App.Pages.ViewModel
                                                      .Contains(lowerSearchTerm)
                                                  || lamb.CpState.ToLower().Contains(lowerSearchTerm);
 
-            Cppredicate = Combine(predicateEmployeeForCp, Expression.AndAlso, filter);
+            Cppredicate = Combine(_predicateEmployeeForCp, Expression.AndAlso, filter);
 
             CpDetailModels.Clear();
             CpDetailModels = await _cpFacade.GetAsync(filter: Cppredicate);
@@ -117,43 +132,48 @@ namespace application.App.Pages.ViewModel
             return true;
         }
 
-        partial void OnSelectedEmployeeChanged(EmployeeDetailModel? oldValue, EmployeeDetailModel? newValue)
+        private void EmployeeDetailModels_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (newValue != null)
-                predicateEmployeeForCp = l => l.IdEmployee == newValue.Id;
-            else
-                predicateEmployeeForCp = l => true;
-            LoadDataCpQuery();
+            //Added Items
+            if (e.NewItems != null)
+            {
+                foreach (EmployeeDetailModel newEmployee in e.NewItems)
+                    newEmployee.PropertyChanged += Employee_PropertyChanged;
+            }
+
+            //Removed Items
+            if (e.OldItems != null)
+            {
+                foreach (EmployeeDetailModel oldEmployee in e.OldItems)
+                    oldEmployee.PropertyChanged -= Employee_PropertyChanged;
+            }
         }
 
-        private void SelectedEmployeeListOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        private void Employee_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            switch (e.Action)
+            if (e.PropertyName == nameof(EmployeeDetailModel.ISelectedFromEmployeeFilter))
             {
-                case NotifyCollectionChangedAction.Add:
-                    _actualSelectedEmployeeIndex++;
-                    break;
-                case NotifyCollectionChangedAction.Reset:
-                    _actualSelectedEmployeeIndex = 0;
-                    break;
-                default:
-                    break;
+                UpdateSelectedEmployees();
             }
+        }
 
-            if (_actualSelectedEmployeeIndex + 1 >= _lastSelectedEmployeeCount && _actualSelectedEmployeeIndex != _lastSelectedEmployeeCount)
+        public async Task UpdateSelectedEmployees()
+        {
+            int cntOfSelectedEmployees = 0;
+            _predicateEmployeeForCp = l => false;
+            foreach (var employee in EmployeeDetailModels)
             {
-                _lastSelectedEmployeeCount = _actualSelectedEmployeeIndex;
-
-                if (_lastSelectedEmployeeCount == 0)
-                    predicateEmployeeForCp = l => true;
-                else
-                    predicateEmployeeForCp = l => false;
-                foreach (var employeeDetail in SelectedEmployeeList.OfType<EmployeeDetailModel>().ToList())
+                if (employee.ISelectedFromEmployeeFilter)
                 {
-                    Expression<Func<Cp, bool>> filter = lamb => lamb.IdEmployee == employeeDetail.Id;
-                    predicateEmployeeForCp = Combine(predicateEmployeeForCp, Expression.OrElse, filter);
+                    cntOfSelectedEmployees++;
+                    Expression<Func<Cp, bool>> filter = lamb => lamb.IdEmployee == employee.Id;
+                    _predicateEmployeeForCp = Combine(_predicateEmployeeForCp, Expression.OrElse, filter);
                 }
             }
+            if (cntOfSelectedEmployees == 0)
+                _predicateEmployeeForCp = l => true;
+
+            await LoadDataCpQuery();
         }
 
         //Auxiliary Functions

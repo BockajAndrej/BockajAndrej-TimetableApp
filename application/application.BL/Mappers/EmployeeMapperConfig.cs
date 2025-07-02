@@ -10,12 +10,12 @@ public class EmployeeMapperConfig : Profile
     public EmployeeMapperConfig()
     {
         CreateMap<Employee, EmployeeDetailModel>()
-            .ForMember(dest => dest.Trips, 
+            .ForMember(dest => dest.Trips,
                 opt => opt.MapFrom(src => src.Cps));
-        
+
         //Inversion functionality
         CreateMap<EmployeeDetailModel, Employee>()
             .ForMember(dest => dest.Cps,
-                opt => opt.MapFrom(src => src.Trips)); 
+                opt => opt.MapFrom(src => src.Trips));
     }
 }

@@ -1,6 +1,8 @@
-﻿namespace application.BL.Models.Lists;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-public class EmployeeListModel
+namespace application.BL.Models.Lists;
+
+public partial class EmployeeListModel : ObservableObject
 {
     public required string Id { get; set; } = null!;
 
@@ -11,4 +13,7 @@ public class EmployeeListModel
     public required string BirthNumber { get; set; } = null!;
 
     public string FullName => $"{FirstName} {LastName}";
+
+    [ObservableProperty]
+    private bool _iSelectedFromEmployeeFilter = false;
 }

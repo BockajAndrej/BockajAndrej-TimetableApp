@@ -15,7 +15,7 @@
                 Margin="5,5">
             <ScrollView Orientation="Vertical">
                 <VerticalStackLayout>
-                    <toolkit:Expander ExpandedChanged="OnExpanderIsExpandedChanged" IsExpanded="False">
+                    <toolkit:Expander IsExpanded="False">
                         <toolkit:Expander.Header>
                             <Border StrokeShape="RoundRectangle 5" Padding="5" Margin="0,5">
                                 <Label Text="+ Employees" FontAttributes="Bold" Padding="10,5"/>
@@ -25,21 +25,20 @@
                         <Border StrokeShape="RoundRectangle 5" Padding="-5" Margin="0,0">
                             <VerticalStackLayout Padding="10">
                                 <Grid ColumnDefinitions="*, auto">
-                                    <SearchBar Grid.Column="0" Placeholder="Search employees..." HorizontalTextAlignment="Start" Text="{Binding SearchbarEmployee, Mode=TwoWay}" SearchCommand="{Binding LoadDataEmployeeQueryCommand}"/>
+                                    <SearchBar Grid.Column="0" Placeholder="Search employees..." HorizontalTextAlignment="Start" Text="{Binding SearchbarEmployee, Mode=TwoWay}"/>
                                     <Button Grid.Column="1" Text="+" Clicked="NewEmployeeButton_Clicked"/>
                                 </Grid>
 
                                 <CollectionView ItemsSource="{Binding EmployeeDetailModels}" 
                                                 MaximumHeightRequest="200" 
-                                                SelectionMode="Multiple"
-                                                SelectedItems="{Binding SelectedEmployeeList}">
+                                                SelectionMode="None">
                                     <CollectionView.ItemTemplate>
                                         <DataTemplate x:DataType="details:EmployeeDetailModel">
                                             <Border StrokeShape="RoundRectangle 5" Padding="0" Margin="50, 0, 0,5">
                                                 <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="auto, *, Auto" ColumnSpacing="10" Padding="5, 0, 5, 0">
                                                     <Label Grid.Row="1" Grid.Column="0" Text="{Binding Id}" VerticalOptions="Center" />
                                                     <Label Grid.Row="1" Grid.Column="1" Text="{Binding FullName}" VerticalOptions="Center"  HorizontalOptions="Center"/>
-                                                    <Button Text="..." Grid.Row="1" Grid.Column="2" VerticalOptions="Center" HorizontalOptions="End"/>
+                                                    <CheckBox IsChecked="{Binding ISelectedFromEmployeeFilter}" Grid.Row="1" Grid.Column="2" VerticalOptions="Center" HorizontalOptions="End"/>
                                                 </Grid>
                                             </Border>
                                         </DataTemplate>
