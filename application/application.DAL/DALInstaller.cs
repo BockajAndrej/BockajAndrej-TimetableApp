@@ -17,12 +17,6 @@ namespace application.DAL
                 options.LogTo(Console.WriteLine);
             });
 
-            //services.AddSingleton<City>();
-            //services.AddSingleton<Cp>();
-            //services.AddSingleton<Employee>();
-            //services.AddSingleton<Transport>();
-            //services.AddSingleton<Vehicle>();
-
             return services;
         }
     }

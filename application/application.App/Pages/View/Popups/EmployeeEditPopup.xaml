@@ -2,18 +2,66 @@
 <toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+               xmlns:details="clr-namespace:application.BL.Models.Details;assembly=application.BL"
+               x:TypeArguments="details:EmployeeDetailModel" 
                x:Class="application.App.Pages.View.Popups.EmployeeEditPopup"
->
-    <VerticalStackLayout Spacing="6">
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-        <Button Text="Yes" 
-                Clicked="OnYesButtonClicked" />
+               BackgroundColor="{StaticResource Gray900}">
 
-        <Button Text="No"
-                Clicked="OnNoButtonClicked" />
-    </VerticalStackLayout>
+    <toolkit:Popup.Content>
+        <Grid RowDefinitions="Auto, *, Auto"
+              Padding="-50"
+              BackgroundColor="{StaticResource Gray900}"
+            WidthRequest="350"
+            HeightRequest="400">
+
+            <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Margin="0,0,0,10">
+                <Image Grid.Column="0"
+                       Source="anonymous_user.jpg"
+                       Aspect="AspectFit"
+                       WidthRequest="100"
+                       HeightRequest="100"
+                       VerticalOptions="Center"
+                       HorizontalOptions="Start" />
+
+                <Button Grid.Column="2" Text="✕" FontSize="Large" TextColor="Gray"
+                        BackgroundColor="Transparent" BorderWidth="0"
+                        HorizontalOptions="End" VerticalOptions="Start" Clicked="OnCloseTapped"/>
+            </Grid>
+
+            <VerticalStackLayout Grid.Row="1" Spacing="10">
+                <Label Text="ID (max 10): " FontAttributes="Bold" />
+                <Entry Placeholder="Zadajte ID" Text="{Binding IdLocal, Mode=TwoWay}"/>
+
+                <Label Text="Meno:" FontAttributes="Bold" />
+                <Entry Placeholder="Zadajte meno" Text="{Binding FirstName, Mode=TwoWay}"/>
+
+                <Label Text="Priezvisko:" FontAttributes="Bold" />
+                <Entry Placeholder="Zadajte priezvisko" Text="{Binding LastName, Mode=TwoWay}"/>
+
+                <Grid ColumnDefinitions="auto, *" ColumnSpacing="20" >
+                    <VerticalStackLayout Grid.Row="0" Grid.Column="0">
+                        <Label Text="Dátum narodenia:" FontAttributes="Bold" />
+                        <DatePicker Format="d.M.yyyy" Date="{Binding BirthDay, Mode=TwoWay}" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Row="0" Grid.Column="1">
+                        <Label Text="Rodné číslo:" FontAttributes="Bold" />
+                        <Entry Placeholder="Zadajte rodné číslo" Keyboard="Default" Text="{Binding BirthNum, Mode=TwoWay}" />
+                    </VerticalStackLayout>
+                </Grid>
+            </VerticalStackLayout>
+
+            <Grid Grid.Row="2" ColumnDefinitions="*, auto, Auto" Margin="0,10,0,0" ColumnSpacing="20">
+                <Button Grid.Column="1"
+                        Text="Odstranit"
+                        HorizontalOptions="Center"/>
+
+                <Button Grid.Column="2"
+                        Text="Uložiť"
+                        HorizontalOptions="End"
+                        Clicked="OnSaveClicked" />
+            </Grid>
+        </Grid>
+    </toolkit:Popup.Content>
+
 
 </toolkit:Popup>

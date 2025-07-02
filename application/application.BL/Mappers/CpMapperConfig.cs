@@ -12,14 +12,15 @@ public class CpMapperConfig : CpDetailMapperConfig
 {
     public CpMapperConfig()
     {
-        CreateMap<Cp, CpListModel>()
-            .ForMember(dest => dest.IdEmployee,
-                opt => opt.MapFrom(src => src.IdEmployee))
-            .ForMember(dest => dest.IdStartCity,
-                opt => opt.MapFrom(src => src.IdStartCity))
-            .ForMember(dest => dest.IdEndCity,
-                opt => opt.MapFrom(src => src.IdEndCity));
-        
+        CreateMap<Cp, CpListModel>();
+        //.ForMember(dest => dest.IdEmployeeNav,
+        //    opt => opt.MapFrom(src => src.IdEmployeeNavigation))
+        //.ForMember(dest => dest.IdStartCityNav,
+        //    opt => opt.MapFrom(src => src.IdStartCityNavigation))
+        //.ForMember(dest => dest.IdEndCityNav,
+        //    opt => opt.MapFrom(src => src.IdEndCityNavigation));
+
+
         CreateMap<CpListModel, Cp>()
             .ForMember(dest => dest.Transports,
                 opt => opt.Ignore());

@@ -34,7 +34,10 @@ public class Facade
             if (filter != null)
                 query = query.Where(filter);
 
-            IQueryable<TModel> projectedQuery = query.ProjectTo<TModel>(_mapper.ConfigurationProvider);
+            IQueryable<TModel> projectedQuery = query
+                .AsSplitQuery()
+                .ProjectTo<TModel>(_mapper.ConfigurationProvider);
+
             resultList = await projectedQuery.ToListAsync();
         }
         return resultList;

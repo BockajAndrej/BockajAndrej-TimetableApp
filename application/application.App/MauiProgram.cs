@@ -1,4 +1,5 @@
 ﻿using application.App.Pages.View;
+using application.App.Pages.View.Popups;
 using application.App.Pages.ViewModel;
 using application.BL;
 using application.BL.Facades;
@@ -27,6 +28,9 @@ namespace application.App
 
             //ViewModels
             builder.Services.AddTransient<MainPageViewModel>();
+
+            //Popups
+            builder.Services.AddTransient<EmployeeEditPopup>();
 
             //Installers
             builder.Services
