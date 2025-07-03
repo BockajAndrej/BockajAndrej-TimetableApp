@@ -106,9 +106,9 @@ namespace application.App.Pages.ViewModel
         private Expression<Func<Cp, bool>> _predicateCityForCp = l => true;
 
         //Variables
-        public EmployeeDetailModel IsClickedemployeeDetailModel;
-        public CityDetailModel IsClickedCityDetailModel;
-        public VehicleDetailModel IsClickedVehicleDetailModel;
+        public EmployeeDetailModel? IsClickedemployeeDetailModel = null;
+        public CityDetailModel? IsClickedCityDetailModel = null;
+        public VehicleDetailModel? IsClickedVehicleDetailModel = null;
 
         public MainPageViewModel(EmployeeFacade employeeFacade, CpFacade cpFacade, CityFacade cityFacade,
             VehicleFacade vehicleFacade)

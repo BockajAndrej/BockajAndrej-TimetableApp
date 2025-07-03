@@ -75,6 +75,9 @@
 		<MauiXaml Update="Pages\View\MainPageView.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>
+		<MauiXaml Update="Pages\View\Popups\CityEditPopup.xaml">
+		  <Generator>MSBuild:Compile</Generator>
+		</MauiXaml>
 		<MauiXaml Update="Pages\View\Popups\EmployeeEditPopup.xaml">
 		  <Generator>MSBuild:Compile</Generator>
 		</MauiXaml>

@@ -18,4 +18,10 @@ public partial class CityListModel : ObservableObject
 
     [ObservableProperty]
     private bool _iSelectedFromFilter = false;
+    [ObservableProperty]
+    private bool _isClickedFromFilter = false;
+
+    public bool IdIsUsed => Id == 0;
+
+    public bool IdIsUsedInverseValue => !IdIsUsed;
 }
