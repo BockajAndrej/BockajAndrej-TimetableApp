@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace application.DAL.Entities;
 
 [Table("Transport")]
-public partial class Transport
+public partial class Transport : IEntity<int>
 {
     [Key]
     [Column("id")]

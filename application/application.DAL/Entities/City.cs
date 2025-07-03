@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace application.DAL.Entities;
 
 [Table("City")]
-public partial class City
+public partial class City : IEntity<int>
 {
     [Key]
     [Column("id")]

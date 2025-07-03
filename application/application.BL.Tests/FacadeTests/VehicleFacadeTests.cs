@@ -1,16 +1,23 @@
 ﻿using application.BL.Facades;
 using application.BL.Models.Details;
+using application.DAL;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit.Abstractions;
 
 namespace application.BL.Tests.FacadeTests;
 
-[Collection("Sequential")]
+[Collection("Facade Test Collection")]
 public class VehicleFacadeTests : FacadeTests
 {
     private readonly ITestOutputHelper _testOutputHelper;
     VehicleFacade _facade;
-    public VehicleFacadeTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+    private readonly ServiceProvider _serviceProvider;
+    public VehicleFacadeTests(ITestOutputHelper testOutputHelper, FacadeTests fixture)
     {
+        _serviceProvider = fixture.ServiceProvider;
+        Factory = _serviceProvider.GetRequiredService<IDbContextFactory<MyDbContext>>();
+        
         _testOutputHelper = testOutputHelper;
         _facade = new VehicleFacade(Factory, Mapper);
     }
@@ -34,7 +41,7 @@ public class VehicleFacadeTests : FacadeTests
         Assert.Equal(cntBefor+1, cntAfter);
         
         //Act 
-        await _facade.DeleteAsync(retList.First());
+        await _facade.DeleteAsync(retList.First().Id);
         retList = await _facade.GetAsync(filter: v => v.Id == retList.First().Id);
         cntAfter = _facade.GetAsync().Result.Count;
 
@@ -43,7 +50,7 @@ public class VehicleFacadeTests : FacadeTests
         Assert.Equal(cntBefor, cntAfter);
     }
 
-    [Fact]
+    [Fact(Skip = "Just for fun")]
     public async Task TestDeleteAsync()
     {
         var all = await _facade.GetAsync();

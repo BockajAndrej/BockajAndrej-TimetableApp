@@ -7,142 +7,53 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace application.App.Pages.View.Popups;
 
-public partial class EmployeeEditPopup : Popup<EmployeeDetailModel?>, INotifyPropertyChanged
+public partial class EmployeeEditPopup : Popup<int>
 {
-    public EmployeeDetailModel? EmpDetail;
-    private string _idLocal { get; set; }
-    public string IdLocal
-    {
-        get { return _idLocal; }
-        set
-        {
-            if (_idLocal != value)
-            {
-                _idLocal = value;
-                OnPropertyChanged(nameof(IdLocal));
-            }
-        }
-    }
-    private string _firstName { get; set; }
-    public string FirstName
-    {
-        get { return _firstName; }
-        set
-        {
-            if (_firstName != value)
-            {
-                _firstName = value;
-                OnPropertyChanged(nameof(FirstName));
-            }
-        }
-    }
-    private string _lastName { get; set; }
-    public string LastName
-    {
-        get { return _lastName; }
-        set
-        {
-            if (_lastName != value)
-            {
-                _lastName = value;
-                OnPropertyChanged(nameof(LastName));
-            }
-        }
-    }
-    private DateOnly _birthDay { get; set; }
-    public DateOnly BirthDay
-    {
-        get { return _birthDay; }
-        set
-        {
-            if (_birthDay != value)
-            {
-                _birthDay = value;
-                OnPropertyChanged(nameof(BirthDay));
-                OnPropertyChanged(nameof(BirthDayDateTime));
-            }
-        }
-    }
-    public DateTime BirthDayDateTime
-    {
-        get { return BirthDay.ToDateTime(TimeOnly.MinValue); }
-        set
-        {
-            if (BirthDay != DateOnly.FromDateTime(value))
-            {
-                BirthDay = DateOnly.FromDateTime(value);
-                OnPropertyChanged(nameof(BirthDay));
-                OnPropertyChanged(nameof(BirthDayDateTime));
-            }
-        }
-    }
-    private string _birthNum { get; set; }
-    public string BirthNum
-    {
-        get { return _birthNum; }
-        set
-        {
-            if (_birthNum != value)
-            {
-                _birthNum = value;
-                OnPropertyChanged(nameof(BirthNum));
-            }
-        }
-    }
+    public EmployeeDetailModel? EmployeeDetailMain;
+    public EmployeeDetailModel? EmployeeDetailTmp;
 
-
-    public EmployeeEditPopup(EmployeeDetailModel? empDetail)
+    public EmployeeEditPopup(EmployeeDetailModel EmployeeDetail)
     {
         InitializeComponent();
-        BindingContext = this;
 
-        EmpDetail = empDetail;
-        if (EmpDetail != null)
+        EmployeeDetailMain = EmployeeDetail;
+
+        EmployeeDetailTmp = new EmployeeDetailModel
         {
-            IdLocal = EmpDetail.Id;
-            FirstName = EmpDetail.FirstName;
-            LastName = EmpDetail.LastName;
-            BirthDay = EmpDetail.BirthDay;
-            BirthNum = EmpDetail.BirthNumber;
-        }
+            Id = EmployeeDetailMain.Id,
+            FirstName = EmployeeDetailMain.FirstName,
+            LastName = EmployeeDetailMain.LastName,
+            BirthDay = EmployeeDetailMain.BirthDay,
+            BirthNumber = EmployeeDetailMain.BirthNumber,
+            Trips = new ObservableCollection<CpListModel>()
+        };
+
+        if (EmployeeDetailMain.Id == string.Empty)
+            EmployeeDetailTmp.IdIsUsed = true;
         else
-        {
-            EmpDetail = new EmployeeDetailModel
-            {
-                Id = null,
-                FirstName = null,
-                LastName = null,
-                BirthDay = default,
-                BirthNumber = null,
-                Trips = new ObservableCollection<CpListModel>()
-            };
+            EmployeeDetailTmp.IdIsUsed = false;
 
-            IdLocal = "";
-            FirstName = "";
-            LastName = "";
-            BirthDay = default;
-            BirthNum = "";
-        }
+        BindingContext = EmployeeDetailTmp;
     }
     async void OnSaveClicked(object? sender, EventArgs e)
     {
-        EmpDetail.Id = IdLocal;
-        EmpDetail.FirstName = FirstName;
-        EmpDetail.LastName = LastName;
-        EmpDetail.BirthDay = BirthDay;
-        EmpDetail.BirthNumber = BirthNum;
+        EmployeeDetailMain.Id = EmployeeDetailTmp.Id;
+        EmployeeDetailMain.FirstName = EmployeeDetailTmp.FirstName;
+        EmployeeDetailMain.LastName = EmployeeDetailTmp.LastName;
+        EmployeeDetailMain.BirthDay = EmployeeDetailTmp.BirthDay;
+        EmployeeDetailMain.BirthNumber = EmployeeDetailTmp.BirthNumber;
 
-        await CloseAsync(EmpDetail);
+        await CloseAsync(1);
     }
 
     async void OnCloseTapped(object? sender, EventArgs e)
     {
-        await CloseAsync(null);
+        await CloseAsync(0);
     }
 
-    public event PropertyChangedEventHandler PropertyChanged;
-    protected virtual void OnPropertyChanged(string propertyName)
+    async void OnDeleteTapped(object? sender, EventArgs e)
     {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        //You are not allowed to remove item with changed Id
+        await CloseAsync(2);
     }
 }

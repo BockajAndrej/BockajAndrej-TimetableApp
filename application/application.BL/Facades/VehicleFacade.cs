@@ -10,7 +10,7 @@ namespace application.BL.Facades;
 public class VehicleFacade(
     IDbContextFactory<MyDbContext> factory,
     IMapper mapperProfile
-) : Facade<Vehicle, VehicleDetailModel, MyDbContext>(factory, mapperProfile)
+) : Facade<Vehicle, VehicleDetailModel, MyDbContext, int>(factory, mapperProfile)
 {
 
 }

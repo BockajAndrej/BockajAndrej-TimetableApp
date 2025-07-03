@@ -10,7 +10,7 @@ namespace application.BL.Facades.RelationSet;
 public class TransportFacade(
     IDbContextFactory<MyDbContext> factory,
     IMapper mapperProfile
-) : Facade<Transport, TransportListModel, MyDbContext>(factory, mapperProfile)
+) : Facade<Transport, TransportListModel, MyDbContext, int>(factory, mapperProfile)
 {
 
 }

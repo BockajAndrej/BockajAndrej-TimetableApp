@@ -1,6 +1,8 @@
-﻿namespace application.BL.Models.Lists;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-public class CpListModel
+namespace application.BL.Models.Lists;
+
+public partial class CpListModel : ObservableObject
 {
     public int Id { get; set; }
     public required DateOnly CreationDate { get; set; }

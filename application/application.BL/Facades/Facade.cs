@@ -1,17 +1,16 @@
-﻿using System.Linq.Expressions;
-using System.Reflection;
-using application.BL.Facades.Interface;
-using application.BL.Mappers;
-using application.DAL;
-using application.DAL.Factories;
+﻿using application.BL.Facades.Interface;
+using application.DAL.Entities;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace application.BL.Facades;
 
 public class Facade
-    <TEntity, TModel, TDbContext> : IFacade<TEntity, TModel> where TEntity : class where TDbContext : DbContext
+    <TEntity, TModel, TDbContext, TIdValue> : IFacade<TEntity, TModel, TIdValue>
+    where TEntity : class, IEntity<TIdValue>
+    where TDbContext : DbContext
 {
     private IDbContextFactory<TDbContext> _factory;
     private IMapper _mapper;
@@ -63,25 +62,17 @@ public class Facade
         return _mapper.Map<TModel>(entity);
     }
 
-    public async Task DeleteAsync(TModel model)
+
+    public async Task DeleteAsync(TIdValue Id)
     {
-        PropertyInfo? idProperty = typeof(TModel).GetProperty("Id");
-        if (idProperty == null)
-            throw new InvalidOperationException($"Typ {typeof(TModel).Name} nemá property s názvom 'Id'.");
-
-
-        object? entityId = idProperty.GetValue(model);
-        if (entityId == null)
-            throw new ArgumentException("Entity Id is not defined");
-
-
-        using (var dbContext = _factory.CreateDbContext())
+        using (var dbContext = await _factory.CreateDbContextAsync())
         {
-            TEntity? entityToDelete = await dbContext.Set<TEntity>().FindAsync(entityId);
-            if (entityToDelete != null)
+            TEntity? entity = await dbContext.Set<TEntity>().FindAsync(Id);
+
+            if (entity != null)
             {
-                dbContext.Remove(entityToDelete);
-                dbContext.SaveChanges();
+                dbContext.Remove(entity);
+                await dbContext.SaveChangesAsync();
             }
         }
     }

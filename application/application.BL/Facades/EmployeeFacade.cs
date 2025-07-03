@@ -11,6 +11,6 @@ namespace application.BL.Facades;
 public class EmployeeFacade(
     IDbContextFactory<MyDbContext> factory,
     IMapper mapperProfile
-    ) : Facade<Employee, EmployeeDetailModel, MyDbContext>(factory, mapperProfile)
+    ) : Facade<Employee, EmployeeDetailModel, MyDbContext, string>(factory, mapperProfile)
 {
 }

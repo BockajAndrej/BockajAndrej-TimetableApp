@@ -1,28 +1,39 @@
 ﻿using application.BL.Mappers;
+using application.DAL;
 using application.DAL.Factories;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit.Abstractions;
 
 namespace application.BL.Tests.FacadeTests;
-[Collection("Sequential")]
+
+[CollectionDefinition("Facade Test Collection")]
+public class FacadeTestCollection : ICollectionFixture<FacadeTests> { }
+
 public class FacadeTests : IDisposable
 {
-    protected readonly ITestOutputHelper TestOutputHelper;
-    protected readonly DbContexCpFactory Factory;
+    public ServiceProvider ServiceProvider { get; private set; }
+
+    protected IDbContextFactory<MyDbContext> Factory;
     protected readonly IMapper Mapper;
-    
-    public FacadeTests(ITestOutputHelper testOutputHelper)
+
+    public FacadeTests()
     {
-        TestOutputHelper = testOutputHelper;
-        Factory = new DbContexCpFactory(@"Server=(localdb)\MSSQLLocalDB;Database=applicationDb;Trusted_Connection=True;");
-        
+        var services = new ServiceCollection();
+
+        services.AddDalServices();
+
+        ServiceProvider = services.BuildServiceProvider();
+
         var mapperProfile = new MapperProfile();
         var mapperConfig = mapperProfile.Config();
         Mapper = mapperConfig.CreateMapper();
     }
-    
+
     public void Dispose()
     {
-        Factory?.Dispose();
+        ServiceProvider?.Dispose();
     }
 }

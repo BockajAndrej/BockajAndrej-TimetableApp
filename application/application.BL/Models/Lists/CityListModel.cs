@@ -1,10 +1,21 @@
-﻿namespace application.BL.Models.Lists;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-public class CityListModel
+namespace application.BL.Models.Lists;
+
+public partial class CityListModel : ObservableObject
 {
-    public required int Id { get; set; }
-    public required decimal Latitude { get; set; }
-    public required decimal Longitude { get; set; }
-    public required string CityName { get; set; }
-    public required string StateName { get; set; }
+    [ObservableProperty]
+    private int _id;
+    [ObservableProperty]
+    private decimal _latitude;
+    [ObservableProperty]
+    private decimal _longitude;
+    [ObservableProperty]
+    private string _cityName;
+    [ObservableProperty]
+    private string _stateName;
+
+
+    [ObservableProperty]
+    private bool _iSelectedFromFilter = false;
 }

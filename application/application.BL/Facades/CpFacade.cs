@@ -15,7 +15,7 @@ namespace application.BL.Facades;
 public class CpFacade(
     IDbContextFactory<MyDbContext> factory,
     IMapper mapperProfile
-    ) : Facade<Cp, CpDetailModel, MyDbContext>(factory, mapperProfile)
+    ) : Facade<Cp, CpDetailModel, MyDbContext, int>(factory, mapperProfile)
 {
     private readonly IDbContextFactory<MyDbContext> _factory = factory;
     private readonly IMapper _mapperProfile = mapperProfile;

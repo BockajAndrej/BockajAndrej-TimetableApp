@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace application.DAL.Entities;
 
 [Table("CP")]
-public partial class Cp
+public partial class Cp : IEntity<int>
 {
     [Key]
     [Column("id")]

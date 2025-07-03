@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-               xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+               xmlns:system="clr-namespace:System;assembly=mscorlib"
                xmlns:details="clr-namespace:application.BL.Models.Details;assembly=application.BL"
-               x:TypeArguments="details:EmployeeDetailModel" 
+               xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+               x:TypeArguments="system:Int32"
                x:Class="application.App.Pages.View.Popups.EmployeeEditPopup"
                BackgroundColor="{StaticResource Gray900}">
 
@@ -30,7 +31,7 @@
 
             <VerticalStackLayout Grid.Row="1" Spacing="10">
                 <Label Text="ID (max 10): " FontAttributes="Bold" />
-                <Entry Placeholder="Zadajte ID" Text="{Binding IdLocal, Mode=TwoWay}"/>
+                <Entry IsEnabled="{Binding IdIsUsed}" Placeholder="Zadajte ID" x:DataType="details:EmployeeDetailModel" Text="{Binding Id, Mode=TwoWay}"/>
 
                 <Label Text="Meno:" FontAttributes="Bold" />
                 <Entry Placeholder="Zadajte meno" Text="{Binding FirstName, Mode=TwoWay}"/>
@@ -45,7 +46,7 @@
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="0" Grid.Column="1">
                         <Label Text="Rodné číslo:" FontAttributes="Bold" />
-                        <Entry Placeholder="Zadajte rodné číslo" Keyboard="Default" Text="{Binding BirthNum, Mode=TwoWay}" />
+                        <Entry Placeholder="Zadajte rodné číslo" Keyboard="Default" Text="{Binding BirthNumber, Mode=TwoWay}" />
                     </VerticalStackLayout>
                 </Grid>
             </VerticalStackLayout>
@@ -53,7 +54,10 @@
             <Grid Grid.Row="2" ColumnDefinitions="*, auto, Auto" Margin="0,10,0,0" ColumnSpacing="20">
                 <Button Grid.Column="1"
                         Text="Odstranit"
-                        HorizontalOptions="Center"/>
+                        HorizontalOptions="Center"
+                        IsEnabled="{Binding IdIsUsedInverseValue}" 
+                        x:DataType="details:EmployeeDetailModel" 
+                        Clicked="OnDeleteTapped"/>
 
                 <Button Grid.Column="2"
                         Text="Uložiť"

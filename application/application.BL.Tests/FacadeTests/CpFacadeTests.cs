@@ -2,16 +2,28 @@
 using application.BL.Facades.RelationSet;
 using application.BL.Models.Details;
 using application.BL.Models.RelationSet;
+using application.DAL;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit.Abstractions;
 
 namespace application.BL.Tests.FacadeTests;
 
+[Collection("Facade Test Collection")]
 public class CpFacadeTests : FacadeTests
 {
     CpFacade _facade;
-    public CpFacadeTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+    private readonly ServiceProvider _serviceProvider;
+
+    private ITestOutputHelper _testOutputHelper;
+    public CpFacadeTests(ITestOutputHelper testOutputHelper, FacadeTests fixture)
     {
+        _serviceProvider = fixture.ServiceProvider;
+        Factory = _serviceProvider.GetRequiredService<IDbContextFactory<MyDbContext>>();
+        
         _facade = new CpFacade(Factory, Mapper);
+        
+        _testOutputHelper = testOutputHelper;
     }
 
     [Fact]
@@ -43,7 +55,7 @@ public class CpFacadeTests : FacadeTests
         Assert.Equal(getBefore+1, getAfter);
         
         //Act 
-        await _facade.DeleteAsync(retList.First());
+        await _facade.DeleteAsync(retList.First().Id);
         retList = await _facade.GetAsync(filter: v => v.Id == model.Id);
         getAfter = (await _facade.GetAsync()).Count();
 
@@ -57,7 +69,6 @@ public class CpFacadeTests : FacadeTests
     {
         //Arrange
         VehicleFacade vehicleFacade = new VehicleFacade(Factory, Mapper);
-        TransportFacade transportFacade = new TransportFacade(Factory, Mapper);
         
         var model = new CpDetailModel()
         {
@@ -78,10 +89,10 @@ public class CpFacadeTests : FacadeTests
         var modelList = await _facade.GetAsync();
         foreach (var item in modelList)
         {
-            TestOutputHelper.WriteLine($"CP: {item.Id}, {item.CpState} ");
+            _testOutputHelper.WriteLine($"CP: {item.Id}, {item.CpState} ");
             foreach (var vehicle in item.VehicleList)
             {
-                TestOutputHelper.WriteLine($"\t- {item.IdEmployee} -> Vehicle: {vehicle.Id}, {vehicle.VehicleName} ");
+                _testOutputHelper.WriteLine($"\t- {item.IdEmployee} -> Vehicle: {vehicle.Id}, {vehicle.VehicleName} ");
             }
         }
     }
