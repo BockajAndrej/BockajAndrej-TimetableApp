@@ -41,7 +41,7 @@
                 <Grid ColumnDefinitions="auto, *" ColumnSpacing="20" >
                     <VerticalStackLayout Grid.Row="0" Grid.Column="0">
                         <Label Text="Dátum narodenia:" FontAttributes="Bold" />
-                        <DatePicker Format="d.M.yyyy" Date="{Binding BirthDay, Mode=TwoWay}" />
+                        <DatePicker Format="d.M.yyyy" Date="{Binding BirthDayDateTime, Mode=TwoWay}" />
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Row="0" Grid.Column="1">
                         <Label Text="Rodné číslo:" FontAttributes="Bold" />

@@ -16,4 +16,6 @@ public partial class EmployeeListModel : ObservableObject
 
     [ObservableProperty]
     private bool _iSelectedFromEmployeeFilter = false;
+    [ObservableProperty]
+    private bool _isClickedFromEmployeeFilter = false;
 }

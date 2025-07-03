@@ -12,11 +12,13 @@ namespace application.App.Pages.ViewModel
 {
     public partial class MainPageViewModel : ObservableObject
     {
+        //Facades
         private readonly EmployeeFacade _employeeFacade;
         private readonly CpFacade _cpFacade;
         private readonly CityFacade _cityFacade;
         private readonly VehicleFacade _vehicleFacade;
 
+        //Collections
         private ObservableCollection<EmployeeDetailModel> _employeeDetailModels;
         public ObservableCollection<EmployeeDetailModel> EmployeeDetailModels
         {
@@ -40,7 +42,6 @@ namespace application.App.Pages.ViewModel
             }
         }
 
-
         [ObservableProperty]
         public ICollection<CpDetailModel> _cpDetailModels = new ObservableCollection<CpDetailModel>();
         [ObservableProperty]
@@ -59,6 +60,9 @@ namespace application.App.Pages.ViewModel
         private Expression<Func<Cp, bool>> _predicateVehicleForCp = l => true;
         private Expression<Func<Cp, bool>> _predicateCityForCp = l => true;
 
+        //Variables
+        public EmployeeDetailModel IsClickedemployeeDetailModel;
+
         public MainPageViewModel(EmployeeFacade employeeFacade, CpFacade cpFacade, CityFacade cityFacade,
             VehicleFacade vehicleFacade)
         {
@@ -69,7 +73,6 @@ namespace application.App.Pages.ViewModel
 
             LoadData();
         }
-
         public async Task LoadData()
         {
             var result = await _employeeFacade.GetAsync();
@@ -155,6 +158,12 @@ namespace application.App.Pages.ViewModel
             {
                 UpdateSelectedEmployees();
             }
+        }
+
+        [RelayCommand]
+        public void BtnClickedEmployeeFromFilter(EmployeeDetailModel employee)
+        {
+            IsClickedemployeeDetailModel = employee;
         }
 
         public async Task UpdateSelectedEmployees()

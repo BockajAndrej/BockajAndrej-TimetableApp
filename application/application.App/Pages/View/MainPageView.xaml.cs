@@ -43,7 +43,33 @@ public partial class MainPageView : ContentPage
             await _viewModel.SaveEmployeeAsync(popupResult.Result);
             await _viewModel.LoadData();
         }
+    }
 
+    private async void EditEmployeeButton_Clicked(object sender, EventArgs e)
+    {
+        var popup = new EmployeeEditPopup(_viewModel.IsClickedemployeeDetailModel);
+
+        IPopupResult<EmployeeDetailModel?> popupResult = await this.ShowPopupAsync<EmployeeDetailModel?>(popup, new PopupOptions
+        {
+            Shape = new RoundRectangle
+            {
+                CornerRadius = new CornerRadius(2),
+                Opacity = 0.8f,
+                Stroke = Colors.Black,
+                BackgroundColor = Colors.Black,
+                StrokeThickness = 2
+            }
+        });
+
+        if (popupResult.WasDismissedByTappingOutsideOfPopup)
+            return;
+
+        //Yes was clicked
+        if (popupResult.Result != null)
+        {
+            await _viewModel.SaveEmployeeAsync(popupResult.Result);
+            await _viewModel.LoadData();
+        }
     }
 
     // ExpandedChanged="OnExpanderIsExpandedChanged"

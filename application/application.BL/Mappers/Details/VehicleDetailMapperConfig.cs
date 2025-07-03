@@ -13,12 +13,11 @@ public class VehicleDetailMapperConfig : Profile
                 opt => opt.MapFrom(src => src.Transports.Select(t => t.IdCpNavigation)))
             .ForMember(dest => dest.TransportList,
                 opt => opt.MapFrom(src => src.Transports));
-            
-        
+
+
         //Inversion functionality
-        //Todo: how to save N to N relationship (dont know how to deal with transport entity)
         CreateMap<VehicleDetailModel, Vehicle>()
-            .ForMember(dest => dest.Transports, 
+            .ForMember(dest => dest.Transports,
                 opt => opt.MapFrom(src => src.TransportList));
     }
 }

@@ -6,7 +6,6 @@ namespace application.BL.Mappers.Details;
 
 public class CpDetailMapperConfig : Profile
 {
-    //Todo: Change structure. In Cpmapperconfig is same code need to be unified
     public CpDetailMapperConfig()
     {
         CreateMap<Cp, CpDetailModel>()
